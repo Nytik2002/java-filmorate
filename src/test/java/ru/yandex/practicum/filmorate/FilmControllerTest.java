@@ -8,12 +8,22 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 class FilmControllerTest {
 
 
-    FilmController filmController = new FilmController();
-    UserController userController = new UserController();
+    FilmStorage filmStorage = new InMemoryFilmStorage();
+    FilmService filmService = new FilmService(filmStorage);
+    FilmController filmController = new FilmController(filmService);
+    UserStorage userStorage = new InMemoryUserStorage();
+    UserService userService = new UserService(userStorage);
+    UserController userController = new UserController(userService);
 
     @Test
     void shouldRejectEmptyFilmName() {
