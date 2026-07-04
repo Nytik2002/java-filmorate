@@ -5,12 +5,11 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface FilmStorage {
-
-    Film create(Film film);
+    Film add(Film film);
 
     Film update(Film film);
 
-    Film getById(Integer id);
-
     Collection<Film> getAll();
+
+    Optional<Film> getById(int id);
 }
