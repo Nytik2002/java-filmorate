@@ -5,8 +5,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface UserStorage {
-    User add(User user);
+
+    User create(User user);
+
     User update(User user);
+
+    User getById(Integer id);
+
     Collection<User> getAll();
-    Optional<User> getById(int id);
 }
