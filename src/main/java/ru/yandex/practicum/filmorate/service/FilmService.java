@@ -5,17 +5,22 @@ import ru.yandex.practicum.filmorate.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.ValidationException;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
+
+
 @Service
 public class FilmService {
 
+    private final UserStorage userStorage;
     private final FilmStorage filmStorage;
 
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public Film create(Film film) {
@@ -41,11 +46,19 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
-        getById(filmId).getLikes().add(userId);
+        Film film = getById(filmId);
+
+        userStorage.getById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        film.getLikes().add(userId);
     }
 
     public void removeLike(int filmId, int userId) {
-        getById(filmId).getLikes().remove(userId);
+        Film film = getById(filmId);
+
+        userStorage.getById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        film.getLikes().remove(userId);
     }
 
     public List<Film> getPopular(int count) {
