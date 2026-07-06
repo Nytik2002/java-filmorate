@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.yandex.practicum.filmorate.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.ValidationException;
+
 import java.time.LocalDate;
 import java.util.Collection;
 
@@ -13,7 +15,9 @@ public class UserService {
 
     private final UserStorage userStorage;
 
-    public UserService(UserStorage userStorage) {
+    public UserService(
+            @Qualifier("userDbStorage") UserStorage userStorage
+    ) {
         this.userStorage = userStorage;
     }
 
@@ -50,28 +54,26 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        User user = getById(userId);
-        User friend = getById(friendId);
-
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        getById(userId);
+        getById(friendId);
+        userStorage.addFriend(userId, friendId);
     }
 
     public void removeFriend(int userId, int friendId) {
-        getById(userId).getFriends().remove(friendId);
-        getById(friendId).getFriends().remove(userId);
+        getById(userId);
+        getById(friendId);
+        userStorage.removeFriend(userId, friendId);
     }
 
     public Collection<User> getFriends(int id) {
-        User user = getById(id);
-        return user.getFriends().stream().map(this::getById).toList();
+        return userStorage.getFriends(id).stream().map(this::getById).toList();
     }
 
     public Collection<User> getCommonFriends(int id, int otherId) {
-        User u1 = getById(id);
-        User u2 = getById(otherId);
+        Collection<Integer> friends1 = userStorage.getFriends(id);
+        Collection<Integer> friends2 = userStorage.getFriends(otherId);
 
-        return u1.getFriends().stream().filter(u2.getFriends()::contains).map(this::getById).toList();
+        return friends1.stream().filter(friends2::contains).map(this::getById).toList();
     }
 
     private void validate(User user) {
