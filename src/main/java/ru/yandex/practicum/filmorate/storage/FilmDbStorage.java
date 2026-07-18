@@ -89,7 +89,7 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getAll() {
         List<Film> films = jdbcTemplate.query(
                 """
-                SELECT 
+                SELECT
                     f.*,
                     m.name AS mpa_name
                 FROM films f
@@ -109,7 +109,7 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> getById(int id) {
         List<Film> films = jdbcTemplate.query(
                 """
-                SELECT 
+                SELECT
                     f.*,
                     m.name AS mpa_name
                 FROM films f
