@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
+import ru.yandex.practicum.filmorate.NotFoundException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -104,16 +105,35 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<Integer> getFriends(int userId) {
+
+        if (!existsUser(userId)) {
+            throw new NotFoundException("User not found");
+        }
+
         String sql = """
-            SELECT friend_id
-            FROM friendship
-            WHERE user_id=?
-            """;
+        SELECT friend_id
+        FROM friendship
+        WHERE user_id=?
+        """;
 
         return jdbcTemplate.query(
                 sql,
                 (rs, rowNum) -> rs.getInt("friend_id"),
                 userId
         );
+    }
+
+    private boolean existsUser(int userId) {
+        Integer count = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM users
+                WHERE id=?
+                """,
+                Integer.class,
+                userId
+        );
+
+        return count != null && count > 0;
     }
 }
