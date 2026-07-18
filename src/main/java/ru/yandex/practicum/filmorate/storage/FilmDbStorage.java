@@ -4,6 +4,7 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import ru.yandex.practicum.filmorate.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -28,6 +29,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film add(Film film) {
+
+        checkMpa(film.getMpa().getId());
+        checkGenres(film);
+
         String sql = """
                 INSERT INTO films
                 (
@@ -206,5 +211,43 @@ public class FilmDbStorage implements FilmStorage {
                 filmId,
                 userId
         );
+    }
+
+    private void checkMpa(int mpaId) {
+        Integer count = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM mpa
+                WHERE id=?
+                """,
+                Integer.class,
+                mpaId
+        );
+
+        if (count == null || count == 0) {
+            throw new NotFoundException("MPA с id " + mpaId + " не найден");
+        }
+    }
+
+    private void checkGenres(Film film) {
+        if (film.getGenres() == null) {
+            return;
+        }
+
+        for (Genre genre : film.getGenres()) {
+            Integer count = jdbcTemplate.queryForObject(
+                    """
+                    SELECT COUNT(*)
+                    FROM genres
+                    WHERE id=?
+                    """,
+                    Integer.class,
+                    genre.getId()
+            );
+
+            if (count == null || count == 0) {
+                throw new NotFoundException("Жанр с id " + genre.getId() + " не найден");
+            }
+        }
     }
 }
