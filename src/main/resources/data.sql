@@ -1,11 +1,11 @@
-INSERT INTO mpa VALUES
+MERGE INTO mpa (id, name) KEY(id) VALUES
 (1,'0'),
 (2,'6+'),
 (3,'12+'),
 (4,'16+'),
 (5,'18+');
 
-INSERT INTO genres VALUES
+MERGE INTO genres (id, name) KEY(id) VALUES
 (1,'Комедия'),
 (2,'Драма'),
 (3,'Мультфильм'),
