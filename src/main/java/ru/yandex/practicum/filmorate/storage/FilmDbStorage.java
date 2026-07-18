@@ -89,8 +89,11 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getAll() {
         List<Film> films = jdbcTemplate.query(
                 """
-                SELECT *
-                FROM films
+                SELECT 
+                    f.*,
+                    m.name AS mpa_name
+                FROM films f
+                LEFT JOIN mpa m ON f.mpa_id = m.id
                 """,
                 filmRowMapper
         );
@@ -106,9 +109,12 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> getById(int id) {
         List<Film> films = jdbcTemplate.query(
                 """
-                SELECT *
-                FROM films
-                WHERE id=?
+                SELECT 
+                    f.*,
+                    m.name AS mpa_name
+                FROM films f
+                LEFT JOIN mpa m ON f.mpa_id = m.id
+                WHERE f.id=?
                 """,
                 filmRowMapper,
                 id
