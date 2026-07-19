@@ -294,14 +294,7 @@ public class FilmDbStorage implements FilmStorage {
     private void setLikes(List<Film> films) {
         Map<Integer, Set<Integer>> likesByFilmId = getLikesByFilmId();
 
-        films.forEach(film ->
-                film.setLikes(
-                        likesByFilmId.getOrDefault(
-                                film.getId(),
-                                new LinkedHashSet<>()
-                        )
-                )
-        );
+        films.forEach(film -> film.setLikes(likesByFilmId.getOrDefault(film.getId(), new LinkedHashSet<>())));
     }
 
     private Map<Integer, Set<Integer>> getLikesByFilmId() {
