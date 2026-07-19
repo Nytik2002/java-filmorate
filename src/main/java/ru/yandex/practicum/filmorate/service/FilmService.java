@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.yandex.practicum.filmorate.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -18,7 +19,10 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
 
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(
+            @Qualifier("filmDbStorage") FilmStorage filmStorage,
+            @Qualifier("userDbStorage") UserStorage userStorage
+    ) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -46,19 +50,17 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
-        Film film = getById(filmId);
+        getById(filmId);
 
         userStorage.getById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-        film.getLikes().add(userId);
+        filmStorage.addLike(filmId, userId);
     }
 
     public void removeLike(int filmId, int userId) {
-        Film film = getById(filmId);
+        getById(filmId);
 
         userStorage.getById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-        film.getLikes().remove(userId);
+        filmStorage.removeLike(filmId, userId);
     }
 
     public List<Film> getPopular(int count) {
