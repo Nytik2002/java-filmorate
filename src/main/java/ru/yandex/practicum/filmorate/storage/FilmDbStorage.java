@@ -270,7 +270,7 @@ public class FilmDbStorage implements FilmStorage {
         Map<Integer, Set<Genre>> genresByFilmId = new HashMap<>();
 
         String sql = """
-            SELECT 
+            SELECT
                 fg.film_id,
                 g.id,
                 g.name
